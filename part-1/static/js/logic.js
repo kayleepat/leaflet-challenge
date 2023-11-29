@@ -17,7 +17,7 @@ d3.json(link).then(function(data) {
             // Customize the circle marker style based on magnitude
             return L.circleMarker(feature.geometry.coordinates, {
                 radius: feature.properties.mag * 1.5,
-                fillColor: getColor(feature.geometry.coordinates), 
+                fillColor: getColor(feature.geometry.coordinates[2]), 
                 color: '#000',
                 weight: 1,
                 opacity: 0.6,
@@ -41,28 +41,29 @@ d3.json(link).then(function(data) {
 
     var legend = L.control({position: 'bottomright'});
 
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend'),
-            grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-            labels = [];
-      
-        // loop through our density intervals and generate a label with a colored square for each interval
-        for (var i = 0; i < grades.length; i++) {
-          div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-        }
-      
-        return div;
-      };
+    // Add legend
+    var legend = L.control({position: "bottomright"});
 
-    legend.addTo(map);
+    legend.onAdd = function() {
+        var div = L.DomUtil.create("div", "info legend"),
+        depth = [-10, 10, 30, 50, 70, 90];
+
+        div.innerHTML += "<h3 style='text-align: center'>Depth</h3>"
+
+        for (var i = 0; i < depth.length; i++) {
+                div.innerHTML +=
+                '<i style="background:' + getColor(depth[i] + 1) + '"></i> ' + depth[i] + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+    
+    legend.addTo(map)
 
 })
 
 
-function getColor(coords) {
-    let depth = coords[2];
+function getColor(depth) {
 
     return depth >= 90 ? '#FE1F23' :
            depth >= 70 ? '#FF8E28' :
